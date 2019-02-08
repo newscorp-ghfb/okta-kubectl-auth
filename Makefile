@@ -1,6 +1,6 @@
 GO_PKG = github.com/newscorp-ghfb/okta-kubectl-auth
 
-REGISTRY := quay.io/newscorp-ghfb
+REGISTRY := quay.io/tarmak
 IMAGE_NAME := okta-kubectl-auth
 BUILD_TAG := build
 IMAGE_TAGS := canary

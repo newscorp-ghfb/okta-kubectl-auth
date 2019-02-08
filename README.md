@@ -16,14 +16,16 @@ Once you have compiled and installed `okta-kubectl-auth` and created your Okta a
 We can now run `okta-kubectl-auth` as follows:
 
 ```
-okta-kubectl-auth --client-id=<client-id> --client-secret=<client-secret> --base-domain=<issuer-uri>
+okta-kubectl-auth --client-id=<client-id> --client-secret=<client-secret> --base-domain=<issuer-uri> --kubeconfig <kubeconfig_path> --username <username>
 ```
 
-Follow the instructions printed by `okta-kubectl-auth` to complete the setup process.
+Running `okta-kubectl-auth` will open the Okta login screen in your default browser and wait for you to enter your credentials. Once these are confirmed, it will then proceed to configure your kubeconfig for you.
+
+If you don't supply the optional `--kubeconfig` or `--username` arguments then `okta-kubectl-auth` will instead output the command that you can run seperately.
 
 ### `kubectl`
 
-`okta-kubectl-auth` will output the required `kubectl` configuration after authentication.
+`okta-kubectl-auth` can either configure `kubectl` for you, or output the required `kubectl` configuration after authentication.
 
 ### `apiserver`
 
