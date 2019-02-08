@@ -1,6 +1,7 @@
 package okta
 
 import (
+	"github.com/pkg/browser"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -193,6 +194,7 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 	tokenCh, err := o.retrieveToken(state, nonce)
 
 	fmt.Printf("\nPlease navigate to the following URL and login to your Okta account:\n\n%s\n", authCodeURL)
+	browser.OpenURL(authCodeURL)
 	// publish URL in channel
 	if authCodeURLCh != nil {
 		authCodeURLCh <- authCodeURL
