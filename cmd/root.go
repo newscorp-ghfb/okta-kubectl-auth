@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/jetstack/okta-kubectl-auth/pkg/okta"
+	"github.com/newscorp-ghfb/okta-kubectl-auth/pkg/okta"
 )
 
 type Flags struct {
