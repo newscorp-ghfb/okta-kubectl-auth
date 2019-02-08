@@ -15,6 +15,8 @@ type Flags struct {
 	ClientSecret string
 	BaseDomain   string
 	BindAddr     string
+    Username     string
+    KubeConfig   string
 }
 
 var flags = &Flags{}
@@ -49,6 +51,8 @@ func newOkta(flags *Flags) *okta.Okta {
 	o.ClientID = flags.ClientID
 	o.ClientSecret = flags.ClientSecret
 	o.Debug = flags.Debug
+	o.KubeConfig = flags.KubeConfig
+	o.Username = flags.Username
 	return o
 }
 
@@ -62,4 +66,8 @@ func init() {
 	RootCmd.MarkPersistentFlagRequired("base-domain")
 	RootCmd.PersistentFlags().StringVar(&flags.BindAddr, "bind-addr", "127.0.0.1:8888", "HTTP address to listen at.")
 	RootCmd.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "Raise log level to debug.")
+
+	RootCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "<kubeconfig_path>", "Path to the kubeconfig you want to update.")
+	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "<username>", "Username to use when setting credentials in the kubeconfig.")
+
 }

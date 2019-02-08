@@ -60,6 +60,10 @@ type Okta struct {
 	ClientID     string
 	ClientSecret string
 
+	KubeConfig  string
+	InputConfig string
+	Username    string
+
 	myVerifier *oidc.IDTokenVerifier
 	myProvider *oidc.Provider
 	myClient   *http.Client
@@ -212,7 +216,7 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <username>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
+	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  %s --kubeconfig %s\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
 
 	return
 }
