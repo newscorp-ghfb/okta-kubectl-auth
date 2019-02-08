@@ -15,6 +15,7 @@ type Flags struct {
 	ClientSecret string
 	BaseDomain   string
 	BindAddr     string
+	InputConfig  string
     Username     string
     KubeConfig   string
 }
@@ -52,6 +53,7 @@ func newOkta(flags *Flags) *okta.Okta {
 	o.ClientSecret = flags.ClientSecret
 	o.Debug = flags.Debug
 	o.KubeConfig = flags.KubeConfig
+	o.InputConfig = flags.InputConfig
 	o.Username = flags.Username
 	return o
 }
@@ -68,6 +70,6 @@ func init() {
 	RootCmd.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "Raise log level to debug.")
 
 	RootCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "<kubeconfig_path>", "Path to the kubeconfig you want to update.")
+	RootCmd.PersistentFlags().StringVar(&flags.InputConfig, "config", "", "Path to a json file containing the required keys/tokens. (see README)")
 	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "<username>", "Username to use when setting credentials in the kubeconfig.")
-
 }

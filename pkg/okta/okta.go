@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/coreos/go-oidc"
@@ -208,7 +209,11 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 	o.printApiserverConfiguration()
 
-	o.printKubectlConfiguration(token.RefreshToken)
+	if o.KubeConfig == "<kubeconfig_path>" {
+		o.printKubectlConfiguration(token.RefreshToken)
+	} else {
+		o.executeKubectlConfiguration(token.RefreshToken)
+	}
 
 	return nil
 
@@ -217,6 +222,19 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
 	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  %s --kubeconfig %s\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
+
+	return
+}
+
+func (o *Okta) executeKubectlConfiguration(refreshToken string) {
+
+	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s\n", o.KubeConfig, o.Username)
+
+	cmdName := "kubectl config set-credentials"
+	cmdArgs := fmt.Sprintf("--auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
+
+	cmd := exec.Command(cmdName, cmdArgs)
+	cmd.Output()
 
 	return
 }
