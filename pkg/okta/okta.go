@@ -62,7 +62,6 @@ type Okta struct {
 	ClientSecret string
 
 	KubeConfig  string
-	InputConfig string
 	Username    string
 
 	myVerifier *oidc.IDTokenVerifier
