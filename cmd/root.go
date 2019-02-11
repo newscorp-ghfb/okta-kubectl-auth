@@ -71,5 +71,5 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig you want to update.")
 	RootCmd.PersistentFlags().StringVar(&flags.InputConfig, "config", "", "Path to a json file containing the required keys/tokens. (see README)")
-	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "", "Username to use when setting credentials in the kubeconfig.")
+	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "", "Username/cluster to use when setting credentials in the kubeconfig.")
 }
