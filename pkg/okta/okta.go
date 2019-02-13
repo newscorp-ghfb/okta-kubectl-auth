@@ -209,7 +209,7 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 	o.printApiserverConfiguration()
 
 	if o.KubeConfig == "" {
-		o.printKubectlConfiguration(token.RefreshToken)
+	o.printKubectlConfiguration(token.RefreshToken)
 	} else {
 		o.executeKubectlConfiguration(token.RefreshToken)
 	}
@@ -220,17 +220,19 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <username> --kubeconfig <kubeconfig_path>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
+	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig if needs be) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <username> --kubeconfig <kubeconfig_path>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
 
 	return
 }
 
 func (o *Okta) executeKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s\n", o.KubeConfig, o.Username)
+	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.Username)
 
 	cmdName := "kubectl config set-credentials"
 	cmdArgs := fmt.Sprintf("--auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
+
+	fmt.Printf("\n%s %s \n", cmdName, cmdArgs)
 
 	cmd := exec.Command(cmdName, cmdArgs)
 	cmd.Output()
