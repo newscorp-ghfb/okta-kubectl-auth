@@ -228,28 +228,26 @@ func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
 func (o *Okta) executeKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.Username)
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
 
 	cmdName := "kubectl"
 	cmdArgs := fmt.Sprintf(" config set-credentials --auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
 
+	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.Username)
 	fmt.Printf("\n%s %s\n\n", cmdName, cmdArgs)
-
-	var stdout bytes.Buffer
-    var stderr bytes.Buffer
 
     cmd := exec.Command("bash", "-c", cmdName + cmdArgs)
     cmd.Stdout = &stdout
     cmd.Stderr = &stderr
-
     err := cmd.Run()
 
-    if err != nil {
-        fmt.Println(err)
+    if err == nil {
+    	fmt.Println(stdout.String())
+    } else {
+    	fmt.Println(err)
         fmt.Println(stderr.String())
     }
-
-    fmt.Println(stdout.String())
 
 	return
 }
