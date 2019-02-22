@@ -8,7 +8,7 @@ For instructions on how to set up an Okta application that uses the OIDC flow to
 
 ### okta-kubectl-auth
 
-####Running the tool:
+#### Running the tool:
 
 Once you have compiled and installed `okta-kubectl-auth` and created your Okta application we can use it to authenticate.
 
@@ -27,7 +27,7 @@ If you don't supply the optional `--kubeconfig` or `--username` arguments then `
 
 #### Running with a config file:
 
-In order to speed the authentication process up slightly you can opt to pass in a config file containing the `--client-id`, `--client-secret`, and `--base-domain` flags for each of your clusters. Using this config file means you can omit those flags when you run the tool, as long as you at least pass in the `--username` flag so that `okta-kubectl-auth` knows which values to use.  
+In order to speed the authentication process up slightly you can opt to pass in a config file containing the `--client-id`, `--client-secret`, and `--base-domain` flags for each of your clusters. Using this config file means you can omit those flags when you run the tool, as long as you at least pass in the `--username` flag so that `okta-kubectl-auth` knows which values to use.
 
 By default, the tool looks for a config file named `cluster_config.json` in the directory that `okta-kubectl-auth` is being run from, but you can instead pass in a different config path using the `--config` flag.
 
@@ -45,8 +45,6 @@ The config file should be structured as follows, where username is equal to the 
 ```
 
 This config file can hold as many config objects as necessary, as long as they all follow this structure.
-
-
 
 ### `kubectl`
 
