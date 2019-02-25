@@ -43,6 +43,7 @@ var RootCmd = &cobra.Command{
 	      cmd.Help()
 	      os.Exit(1)
 	    }
+
 	    return nil
   	},
 	RunE: func(cmd *cobra.Command, args []string) error {

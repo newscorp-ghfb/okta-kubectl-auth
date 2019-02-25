@@ -2,6 +2,10 @@
 
 ## Setup
 
+### Building
+
+To build the tool, simply run `make build` in the repository's root, this will build binaries for Linux and OSX.
+
 ### Okta
 
 For instructions on how to set up an Okta application that uses the OIDC flow to expose user groups as JWT claims, refer to [okta-setup](./docs/okta-setup.md).
