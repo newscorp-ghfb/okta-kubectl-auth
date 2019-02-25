@@ -63,7 +63,7 @@ type Okta struct {
 	ClientSecret string
 
 	KubeConfig  string
-	Username    string
+	ClusterName    string
 
 	myVerifier *oidc.IDTokenVerifier
 	myProvider *oidc.Provider
@@ -221,7 +221,7 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig if necessary) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <username> --kubeconfig <kubeconfig_path>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
+	fmt.Printf("\nRun the following command (replacing <cluster-name> with a user in your kubeconfig if necessary) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <cluster-name> --kubeconfig <kubeconfig_path>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
 
 	return
 }
@@ -232,9 +232,9 @@ func (o *Okta) executeKubectlConfiguration(refreshToken string) {
 	var stderr bytes.Buffer
 
 	cmdName := "kubectl"
-	cmdArgs := fmt.Sprintf(" config set-credentials --auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.Username, o.KubeConfig)
+	cmdArgs := fmt.Sprintf(" config set-credentials --auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.ClusterName, o.KubeConfig)
 
-	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.Username)
+	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.ClusterName)
 	fmt.Printf("\n%s %s\n\n", cmdName, cmdArgs)
 
     cmd := exec.Command("bash", "-c", cmdName + cmdArgs)

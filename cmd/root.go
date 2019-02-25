@@ -19,7 +19,7 @@ type Flags struct {
 	BaseDomain   string
 	BindAddr     string
 	InputConfig  string
-    Username     string
+    ClusterName     string
     KubeConfig   string
 }
 
@@ -36,8 +36,8 @@ var RootCmd = &cobra.Command{
   To run without a config file:
   okta-kubectl-auth --client-id=<id> --client-secret=<secret> --base-domain=<domain>
 
-  To automatically configure your kubeconfig supply the username and kubeconfig flags:
-  okta-kubectl-auth --config=/path/to/config/file.json --username=<name> --kubeconfig=/path/to/kubeconfig`,
+  To automatically configure your kubeconfig supply the cluster-name and kubeconfig flags:
+  okta-kubectl-auth --config=/path/to/config/file.json --cluster-name=<name> --kubeconfig=/path/to/kubeconfig`,
   	PreRunE: func(cmd *cobra.Command, args []string) error {
 	    if flags.ClientID == "" && flags.InputConfig == "" {
 	      cmd.Help()
@@ -69,10 +69,10 @@ func newOkta(flags *Flags) *okta.Okta {
     o.BindAddr = flags.BindAddr
 	o.Debug = flags.Debug
 	o.KubeConfig = flags.KubeConfig
-	o.Username = flags.Username
+	o.ClusterName = flags.ClusterName
 
     if flags.InputConfig != "" {
-    	o.ClientID, o.ClientSecret, o.BaseDomain = ParseConfig(flags.InputConfig, flags.Username)
+    	o.ClientID, o.ClientSecret, o.BaseDomain = ParseConfig(flags.InputConfig, flags.ClusterName)
     } else {
     	o.ClientID = flags.ClientID
         o.ClientSecret = flags.ClientSecret
@@ -82,15 +82,15 @@ func newOkta(flags *Flags) *okta.Okta {
 	return o
 }
 
-func ParseConfig(path string, username string) (string, string, string) {
+func ParseConfig(path string, cluster string) (string, string, string) {
 	jsonConfig, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	id, _, _, _ := jsonparser.Get(jsonConfig, username, "id")
-	secret, _, _, _ := jsonparser.Get(jsonConfig, username, "secret")
-	uri, _, _, _ := jsonparser.Get(jsonConfig, username, "uri")
+	id, _, _, _ := jsonparser.Get(jsonConfig, cluster, "id")
+	secret, _, _, _ := jsonparser.Get(jsonConfig, cluster, "secret")
+	uri, _, _, _ := jsonparser.Get(jsonConfig, cluster, "uri")
 
 	return string(id), string(secret), string(uri)
 }
@@ -105,5 +105,5 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig you want to update.")
 	RootCmd.PersistentFlags().StringVar(&flags.InputConfig, "config", "", "Path to a json file containing the required keys/tokens. (see README)")
-	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "", "Username/cluster to use when setting credentials in the kubeconfig.")
+	RootCmd.PersistentFlags().StringVar(&flags.ClusterName, "cluster-name", "", "ClusterName/cluster to use when setting credentials in the kubeconfig.")
 }
