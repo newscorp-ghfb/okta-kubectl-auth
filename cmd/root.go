@@ -38,16 +38,13 @@ var RootCmd = &cobra.Command{
 
   To automatically configure your kubeconfig supply the username and kubeconfig flags:
   okta-kubectl-auth authorize --config=/path/to/config/file.json --username=<name> --kubeconfig=/path/to/kubeconfig`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		cmd.Help()
-
-		return nil
-	},
-}
-
-var AuthCmd = &cobra.Command{
-	Use: "authorize",
-	Short: "Authenticates and optionally configures your kubeconfig",
+  	PreRunE: func(cmd *cobra.Command, args []string) error {
+	    if flags.ClientID == "" && flags.InputConfig == "" {
+	      cmd.Help()
+	      os.Exit(1)
+	    }
+	    return nil
+  	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		o := newOkta(flags)
 
@@ -98,15 +95,14 @@ func ParseConfig(path string, username string) (string, string, string) {
 }
 
 func init() {
-	RootCmd.AddCommand(AuthCmd)
-	AuthCmd.Flags().StringVar(&flags.ClientID, "client-id", "", "OAuth2 client ID of this application.")
-	AuthCmd.Flags().StringVar(&flags.ClientSecret, "client-secret", "", "OAuth2 client secret of this application.")
+	RootCmd.Flags().StringVar(&flags.ClientID, "client-id", "", "OAuth2 client ID of this application.")
+	RootCmd.Flags().StringVar(&flags.ClientSecret, "client-secret", "", "OAuth2 client secret of this application.")
 
-	AuthCmd.PersistentFlags().StringVar(&flags.BaseDomain, "base-domain", "", "URL of the OpenID Connect issuer.")
-	AuthCmd.PersistentFlags().StringVar(&flags.BindAddr, "bind-addr", "127.0.0.1:8888", "HTTP address to listen at.")
-	AuthCmd.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "Raise log level to debug.")
+	RootCmd.PersistentFlags().StringVar(&flags.BaseDomain, "base-domain", "", "URL of the OpenID Connect issuer.")
+	RootCmd.PersistentFlags().StringVar(&flags.BindAddr, "bind-addr", "127.0.0.1:8888", "HTTP address to listen at.")
+	RootCmd.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "Raise log level to debug.")
 
-	AuthCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig you want to update.")
-	AuthCmd.PersistentFlags().StringVar(&flags.InputConfig, "config", "", "Path to a json file containing the required keys/tokens. (see README)")
-	AuthCmd.PersistentFlags().StringVar(&flags.Username, "username", "", "Username/cluster to use when setting credentials in the kubeconfig.")
+	RootCmd.PersistentFlags().StringVar(&flags.KubeConfig, "kubeconfig", "", "Path to the kubeconfig you want to update.")
+	RootCmd.PersistentFlags().StringVar(&flags.InputConfig, "config", "", "Path to a json file containing the required keys/tokens. (see README)")
+	RootCmd.PersistentFlags().StringVar(&flags.Username, "username", "", "Username/cluster to use when setting credentials in the kubeconfig.")
 }
