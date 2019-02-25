@@ -24,7 +24,7 @@ help:
 
 all: verify build docker_build
 
-build: go_build
+build: go_build_mac go_build_linux
 
 verify: go_verify
 
@@ -58,8 +58,10 @@ docker_push: docker_build
 #################
 go_verify: go_fmt go_vet go_test
 
-go_build:
+go_build_mac:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -tags netgo -ldflags '-w -X main.version=$(CI_COMMIT_TAG) -X main.commit=$(CI_COMMIT_SHA) -X main.date=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)' -o okta-kubectl-auth_darwin_amd64
+
+go_build_linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags '-w -X main.version=$(CI_COMMIT_TAG) -X main.commit=$(CI_COMMIT_SHA) -X main.date=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)' -o okta-kubectl-auth_linux_amd64
 
 go_test:
