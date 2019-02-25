@@ -27,17 +27,17 @@ var flags = &Flags{}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use: "okta-kubectl-auth authorize",
+	Use: "okta-kubectl-auth",
 	Short: "Okta login helper for kubectl",
 	Example: `
   To run with a config file:
-  okta-kubectl-auth authorize --config=/path/to/config/file.json
+  okta-kubectl-auth --config=/path/to/config/file.json
 
   To run without a config file:
-  okta-kubectl-auth authorize --client-id=<id> --client-secret=<secret> --base-domain=<domain>
+  okta-kubectl-auth --client-id=<id> --client-secret=<secret> --base-domain=<domain>
 
   To automatically configure your kubeconfig supply the username and kubeconfig flags:
-  okta-kubectl-auth authorize --config=/path/to/config/file.json --username=<name> --kubeconfig=/path/to/kubeconfig`,
+  okta-kubectl-auth --config=/path/to/config/file.json --username=<name> --kubeconfig=/path/to/kubeconfig`,
   	PreRunE: func(cmd *cobra.Command, args []string) error {
 	    if flags.ClientID == "" && flags.InputConfig == "" {
 	      cmd.Help()
