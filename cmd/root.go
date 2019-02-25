@@ -19,7 +19,7 @@ type Flags struct {
 	BaseDomain   string
 	BindAddr     string
 	InputConfig  string
-    ClusterName     string
+    ClusterName  string
     KubeConfig   string
 }
 
