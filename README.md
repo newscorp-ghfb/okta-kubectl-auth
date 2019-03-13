@@ -4,7 +4,9 @@
 
 ### Building
 
-To build the tool, simply run `make build` in the repository's root, this will build binaries for Linux and OSX.
+To build the tool for release, simply run `make build` in the repository's root, this will build binaries for Linux and OSX.
+
+To build for a single platform, run `make go_build_mac` or `make go_build_linux` to build for OSX or Linux, respectively.
 
 ### Okta
 
