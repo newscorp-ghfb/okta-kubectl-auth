@@ -1,6 +1,8 @@
 package okta
 
 import (
+	"github.com/pkg/browser"
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -11,6 +13,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/coreos/go-oidc"
@@ -58,6 +61,9 @@ type Okta struct {
 
 	ClientID     string
 	ClientSecret string
+
+	KubeConfig  string
+	ClusterName    string
 
 	myVerifier *oidc.IDTokenVerifier
 	myProvider *oidc.Provider
@@ -193,6 +199,7 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 	tokenCh, err := o.retrieveToken(state, nonce)
 
 	fmt.Printf("\nPlease navigate to the following URL and login to your Okta account:\n\n%s\n", authCodeURL)
+	browser.OpenURL(authCodeURL)
 	// publish URL in channel
 	if authCodeURLCh != nil {
 		authCodeURLCh <- authCodeURL
@@ -202,7 +209,11 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 	o.printApiserverConfiguration()
 
-	o.printKubectlConfiguration(token.RefreshToken)
+	if o.KubeConfig == "" {
+		o.printKubectlConfiguration(token.RefreshToken)
+	} else {
+		o.executeKubectlConfiguration(token.RefreshToken)
+	}
 
 	return nil
 
@@ -210,7 +221,33 @@ func (o *Okta) Authorize(authCodeURLCh chan string) error {
 
 func (o *Okta) printKubectlConfiguration(refreshToken string) {
 
-	fmt.Printf("\nRun the following command (replacing <username> with a user in your kubeconfig) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <username>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
+	fmt.Printf("\nRun the following command (replacing <cluster-name> with a user in your kubeconfig if necessary) to configure kubectl for OIDC authentication:\n\nkubectl config set-credentials \\\n  --auth-provider=oidc \\\n  --auth-provider-arg=idp-issuer-url=%s \\\n  --auth-provider-arg=client-id=%s \\\n  --auth-provider-arg=client-secret=%s \\\n  --auth-provider-arg=refresh-token=%s \\\n  <cluster-name> --kubeconfig <kubeconfig_path>\n", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken)
+
+	return
+}
+
+func (o *Okta) executeKubectlConfiguration(refreshToken string) {
+
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	cmdName := "kubectl"
+	cmdArgs := fmt.Sprintf(" config set-credentials --auth-provider=oidc --auth-provider-arg=idp-issuer-url=%s --auth-provider-arg=client-id=%s --auth-provider-arg=client-secret=%s --auth-provider-arg=refresh-token=%s %s --kubeconfig %s", o.BaseDomain, o.ClientID, o.ClientSecret, refreshToken, o.ClusterName, o.KubeConfig)
+
+	fmt.Printf("\nConfiguring kubeconfig at path %s for user/context: %s as follows:\n", o.KubeConfig, o.ClusterName)
+	fmt.Printf("\n%s %s\n\n", cmdName, cmdArgs)
+
+    cmd := exec.Command("bash", "-c", cmdName + cmdArgs)
+    cmd.Stdout = &stdout
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+
+    if err == nil {
+    	fmt.Println(stdout.String())
+    } else {
+    	fmt.Println(err)
+        fmt.Println(stderr.String())
+    }
 
 	return
 }

@@ -13,10 +13,10 @@ archive:
   format: binary
 release:
   github:
-    owner: jetstack
+    owner: newscorp-ghfb
     name: okta-kubectl-auth
 
 sign:
   signature: "${artifact}.asc"
   artifacts: checksum
-  args: ["-u", "tech+releases@jetstack.io", "--output", "${signature}", "--detach-sign", "--armor",  "${artifact}"]
+  args: ["-u", "cloudengineering@news.co.uk", "--output", "${signature}", "--detach-sign", "--armor",  "${artifact}"]
